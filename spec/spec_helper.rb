@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require_relative '../lib/popquiz.rb'
 require_relative '../lib/game.rb'
 require_relative '../lib/player.rb'
