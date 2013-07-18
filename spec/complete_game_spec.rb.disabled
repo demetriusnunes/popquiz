@@ -1,0 +1,71 @@
+require_relative './spec_helper'
+
+describe "A complete game" do
+
+  game = PopQuiz.new(:round_time => 15.minutes,
+                     :allowed_timeouts => 1,
+                     :subjects => [ :geography, :sports, :science ])
+
+  p1 = game.add_player("demetriusnunes@gmail.com")
+  p2 = game.add_player("fhamacher@gmail.com")
+  p3 = game.add_player("andrey@izzui.com")
+  p4 = game.add_player("chicao@affero.com.br")
+
+  logger do |log|
+    log game.started?                 # false
+
+    log game.next_round!              # started at xx-xx-xx xx:xx
+    log game.notify_players           # 4
+    
+    log game.round                    # 1
+    log game.round.question           # What's Brazil capital?
+    log game.round.answers            # [ "São Paulo", "Rio de Janeiro", "Buenos Aires", "Brasilia" ]
+    log game.players.size             # 4
+
+    log p1.answer(3)                  # :correct
+    log game.players_to_play.size     # 3
+    log p1.status                     # :alive
+    log p1.points                     # 10
+
+    log p2.answer(3)                  # :correct
+    log game.players_to_play.size     # 2
+
+    log p3.answer(0)                  # :wrong
+    log game.players_to_play.size     # 1
+    log p3.status                     # :eliminated
+    log p3.points                     # 0
+
+    log p3.answer(1)                  # :wrong
+    log game.players_to_play.size     # 0
+
+    log game.round.complete?          # true
+    log game.round.time_left          # ex: 289342 seconds
+
+    log game.scoreboard               # { p1 => 10, p2 => 10, p3 => 0, p4, => 0 }
+    log game.winner                   # :undefined
+
+    log game.next_round!              # started at xx-xx-xxxx xx:xx
+    log game.notify_players           # 2
+
+    log game.round                    # 2
+    log game.round.question           # Who was Formula 1 champion in 1989?
+    log game.round.answers            # [ "Ayrton Senna", "Nigel Mansell", "Alain Prost", "Nelson Piquet" ]
+    log game.players.size             # 2
+
+    log p1.answer(2)                  # :correct
+    log game.players_to_play.size     # 1
+    log p1.status                     # :alive
+    log p1.points                     # 30
+
+    log p2.answer(0)                  # :wrond
+    log game.players_to_play.size     # 0
+    log p2.status                     # :eliminated
+    log p2.points                     # 10
+
+    log game.scoreboard               # { p1 => 30, p2 => 10, p3 => 0, p4, => 0 }
+
+    log game.winner                   # p1
+    log game.complete?                # true
+  end
+
+end
