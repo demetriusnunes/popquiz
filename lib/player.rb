@@ -1,10 +1,10 @@
+require 'observer'
+
 module PopQuiz
   class Player
-    include Unobservable::Support
+    include Observable 
 
     attr_reader :id, :reader, :points
-
-    attr_event :answered
 
     def initialize(id)
       @id = id
@@ -13,7 +13,8 @@ module PopQuiz
     end
 
     def answer(index)
-      raise_event(:answered, self, index)
+      changed
+      notify_observers self, index
     end
 
     def add_points(points)

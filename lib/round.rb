@@ -16,8 +16,15 @@ module PopQuiz
       2 ** (number-1) * 10
     end
 
+    def completed!
+      @completed = true
+    end
+
+    def completed?
+      @completed == true
+    end
+
     def time_left; end
-    def completed?; end
 
     private
     def pick_question

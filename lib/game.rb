@@ -1,11 +1,17 @@
 require_relative './player'
 require_relative './round'
+require 'securerandom'
 
 module PopQuiz
   class Game
-    attr_reader :players, :eliminated, :rounds, :players_to_play
+    attr_reader :id,
+                :players, 
+                :eliminated, 
+                :rounds, 
+                :players_to_play
 
     def initialize
+        @id = SecureRandom.uuid
         @players = []
         @rounds = []
         @eliminated = []
@@ -13,8 +19,8 @@ module PopQuiz
 
     def add_player(id)
         player = Player.new(id)
+        player.add_observer(self, :player_answered)
         @players << player
-        player.answered.register self, :player_answered
         player
     end
     
@@ -23,8 +29,8 @@ module PopQuiz
     end
 
     def next_round!
-        @players_to_play = @players.dup
         @rounds << Round.new(@rounds.size + 1)
+        @players_to_play = @players.dup
         @rounds.last
     end
 
@@ -34,6 +40,7 @@ module PopQuiz
 
     def player_answered(player, answer)
         @players_to_play.delete player
+        round.completed! if @players_to_play.empty?
 
         if (round.correct_answer == answer)
             player.add_points(round.points)

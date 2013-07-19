@@ -1,5 +1,4 @@
 require 'active_support/time'
-require 'unobservable'
 require_relative './game'
 
 module PopQuiz
